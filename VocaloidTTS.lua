@@ -35,6 +35,8 @@ end
 
 function main(processParam, envParam)
 
+	require('ptab_j')
+
 	-- パラメータ入力ダイアログのウィンドウタイトルを設定する.
 	VSDlgSetDialogTitle("Vocaloid TTS")
 
@@ -47,19 +49,20 @@ function main(processParam, envParam)
 	dlgStatus = VSDlgAddField(field)
 
 	-- ダイアログから入力値を取得する.
-	-- dlgStatus = VSDlgDoModal()
-	-- if (dlgStatus == 2) then
-	-- 	-- When it was cancelled.
-	-- 	return 0
-	-- end
-	-- if ((dlgStatus ~= 1) and (dlgStatus ~= 2)) then
-	-- 	-- When it returned an error.
-	-- 	return 1
-	-- end
+	dlgStatus = VSDlgDoModal()
+	if (dlgStatus == 2) then
+		-- When it was cancelled.
+		return 0
+	end
+	if ((dlgStatus ~= 1) and (dlgStatus ~= 2)) then
+		-- When it returned an error.
+		return 1
+	end
 
 	-- ダイアログから入力値を取得する.
-	-- dlgStatus, lyricsInput = VSDlgGetStringValue("lyrics")
-	-- VSMessageBox(lyricsInput, 0)
+	dlgStatus, lyricsInput = VSDlgGetStringValue("lyrics")
+	lyrics = string.gsub(lyricsInput, 'ー', '')
+	lyrics = lyrics..'。。'
 
 	-- VSSeekToBeginNote()
 	-- result, note = VSGetNextNote()
@@ -68,48 +71,45 @@ function main(processParam, envParam)
 	-- 	result, note = VSGetNextNote()
 	-- end
 
-	ebifry = {}
-	ebifry.posTick = {0, 120, 240, 360, 480}
-	ebifry.durTick = 120
-	ebifry.noteNum = {65, 67, 68, 65, 62}
-	ebifry.velocity = 64
-	ebifry.lyric = "エビフライ"
-	ebifry.phonemes = {"e", "b' i", "p\\ M", "4 a", "i"}
-
-	-- for i=1,5 do
-	-- 	note = {}
-	-- 	note.posTick = ebifry.posTick[i]
-	-- 	note.durTick = ebifry.durTick
-	-- 	note.noteNum = ebifry.noteNum[i]
-	-- 	note.velocity = ebifry.velocity
-	-- 	note.lyric = string.sub(ebifry.lyric, 3*i-2, 3*i)
-	-- 	note.phonemes = ebifry.phonemes[i]
-	-- 	VSInsertNote(note)
-	-- end
-
 	i = 0
-	for line in io.lines("notes(papago).txt") do
-		if (i > 0) then
+	k = 1
+	for line in io.lines("../aubio-0.4.6-win64/bin/voicetest.wav.txt") do
+		if (i > 1) then
 			tmpTable = SplitString(line, '%s')
-			if (math.floor(tonumber(tmpTable[1])) > 70) then
-				tmpTable[1] = 67
-			else
-				tmpTable[1] = math.floor(tonumber(tmpTable[1]))
+			if (tonumber(tmpTable[1]) > 100 and tonumber(tmpTable[2]) > 1000) then
+				lyric = string.sub(lyrics, 3*k-2, 3*k)
+				if(lyric ~= '。' and lyric ~= '、' and lyric ~= '？' and lyric ~= '！') then
+					nextLyric = string.sub(lyrics, 3*k+1, 3*k+3)
+					if(nextLyric == 'ゃ' or nextLyric == 'ャ' or nextLyric == 'ゅ' or nextLyric == 'ュ' or nextLyric == 'ょ' or nextLyric == 'ョ') then
+						lyric = lyric..nextLyric
+						k = k+1
+					end
+					if (tonumber(tmpTable[3]) > 70) then
+						tmpTable[3] = 67
+					end
+					note = {}
+					note.posTick = math.floor(tonumber(tmpTable[4])*1000)
+					note.durTick = math.floor(tonumber(tmpTable[6])*1000)
+					if (note.durTick > 150 or nextLyric == '。' or nextLyric == '、' or nextLyric == '？' or nextLyric == '！') then
+						note.durTick = 150
+					end
+					note.noteNum = tmpTable[3]
+					note.velocity = 64
+					note.lyric = lyric
+					note.phonemes = ptab_j.tab[lyric]
+					nextLyric = string.sub(lyrics, 3*k+1, 3*k+3)
+					if(nextLyric == 'ん' or nextLyric == 'ン') then
+						note.phonemes = note.phonemes..' n'
+						k = k+1
+					elseif(nextLyric == 'っ' or nextLyric == 'ッ' or nextLyric == 'ぁ' or nextLyric == 'ァ' or nextLyric == 'ぃ' or nextLyric == 'ィ' or nextLyric == 'ぅ' or nextLyric == 'ゥ' or nextLyric == 'ぇ' or nextLyric == 'ェ' or nextLyric == 'ぉ' or nextLyric == 'ォ') then
+						k = k+1
+					else
+					end
+					VSInsertNote(note)
+				end
+				k = k+1
 			end
-			note = {}
-			note.posTick = math.floor(tonumber(tmpTable[2]*1000))
-			note.durTick = math.floor(tonumber(tmpTable[3]*1000) - tonumber(tmpTable[2]*1000))
-			note.noteNum = tmpTable[1]
-			note.velocity = 64
-			note.lyric = tmpTable[4]
-			note.phonemes = "a"
-			VSInsertNote(note)
-			-- VSMessageBox(note.posTick..' '..note.durTick..' '..note.noteNum..' '..note.lyrics, 0)	
-			-- for k, v in pairs(tmpTable) do
-			-- 	VSMessageBox(v, 0)
-			-- end
 		end
 		i = i+1
 	end
 end
-

@@ -11,28 +11,6 @@ function manifest()
     return myManifest
 end
 
-function SplitString(str, pat)
-   local t = {}
-   local fpat = "(.-)" .. pat
-   local last_end = 1
-   local s, e, cap = str:find(fpat, 1)
-
-   while s do
-      if s ~= 1 or cap ~= "" then
-         table.insert(t,cap)
-      end
-     last_end = e+1
-     s, e, cap = str:find(fpat, last_end)
-   end
-
-   if last_end <= #str then
-      cap = str:sub(last_end)
-      table.insert(t, cap)
-   end
-
-   return t
-end
-
 function main(processParam, envParam)
 
 	require('ptab_j')
@@ -62,54 +40,112 @@ function main(processParam, envParam)
 	-- ダイアログから入力値を取得する.
 	dlgStatus, lyricsInput = VSDlgGetStringValue("lyrics")
 	lyrics = string.gsub(lyricsInput, 'ー', '')
-	lyrics = lyrics..'。。'
 
-	-- VSSeekToBeginNote()
-	-- result, note = VSGetNextNote()
-	-- while result == 1 do
-	-- 	VSMessageBox(note.velocity, 0)
-	-- 	result, note = VSGetNextNote()
-	-- end
-
-	i = 0
-	k = 1
-	for line in io.lines("../aubio-0.4.6-win64/bin/voicetest.wav.txt") do
-		if (i > 1) then
-			tmpTable = SplitString(line, '%s')
-			if (tonumber(tmpTable[1]) > 100 and tonumber(tmpTable[2]) > 1000) then
-				lyric = string.sub(lyrics, 3*k-2, 3*k)
-				if(lyric ~= '。' and lyric ~= '、' and lyric ~= '？' and lyric ~= '！') then
-					nextLyric = string.sub(lyrics, 3*k+1, 3*k+3)
-					if(nextLyric == 'ゃ' or nextLyric == 'ャ' or nextLyric == 'ゅ' or nextLyric == 'ュ' or nextLyric == 'ょ' or nextLyric == 'ョ') then
-						lyric = lyric..nextLyric
-						k = k+1
-					end
-					if (tonumber(tmpTable[3]) > 70) then
-						tmpTable[3] = 67
-					end
-					note = {}
-					note.posTick = math.floor(tonumber(tmpTable[4])*1000)
-					note.durTick = math.floor(tonumber(tmpTable[6])*1000)
-					if (note.durTick > 150 or nextLyric == '。' or nextLyric == '、' or nextLyric == '？' or nextLyric == '！') then
-						note.durTick = 150
-					end
-					note.noteNum = tmpTable[3]
-					note.velocity = 64
-					note.lyric = lyric
-					note.phonemes = ptab_j.tab[lyric]
-					nextLyric = string.sub(lyrics, 3*k+1, 3*k+3)
-					if(nextLyric == 'ん' or nextLyric == 'ン') then
-						note.phonemes = note.phonemes..' n'
-						k = k+1
-					elseif(nextLyric == 'っ' or nextLyric == 'ッ' or nextLyric == 'ぁ' or nextLyric == 'ァ' or nextLyric == 'ぃ' or nextLyric == 'ィ' or nextLyric == 'ぅ' or nextLyric == 'ゥ' or nextLyric == 'ぇ' or nextLyric == 'ェ' or nextLyric == 'ぉ' or nextLyric == 'ォ') then
-						k = k+1
-					else
-					end
-					VSInsertNote(note)
-				end
-				k = k+1
-			end
-		end
-		i = i+1
+	VSSeekToBeginNote()
+	result, note = VSGetNextNote()
+	while result == 1 do
+		VSRemoveNote(note)
+		result, note = VSGetNextNote()
 	end
+
+	pitch = 0
+	word = 0
+	pp = 0
+	tik = 1
+	k = 4
+	for i=4, string.len(lyrics), 3 do
+		pre = string.sub(lyrics, k-3, k-1)
+		cur = string.sub(lyrics, k, k+2)
+		nex = string.sub(lyrics, k+3, k+5)
+		if(cur ~= '’' and cur ~= '「' and cur ~= '」' and cur ~= '・' and cur ~= '。' and cur ~= '、' and cur ~= '？' and cur ~= '！') then
+			--------- word ------------------------------------
+			if(pre == '’') then
+				word = 1
+				pitch = 64
+			elseif(pre == '「') then
+				word = 1
+				pitch = 67
+			elseif(pre == '」') then
+				word = 1
+				pitch = 61
+			else
+			end
+			if(word == 1) then
+				if(nex == 'ゃ' or nex == 'ャ' or nex == 'ゅ' or nex == 'ュ' or nex == 'ょ' or nex == 'ョ') then
+					cur = cur..nex
+					k = k+3
+					nex = string.sub(lyrics, k+3, k+5)
+				end
+				note = {}
+				note.posTick = tik*120
+				note.durTick = 120
+				if(pre == '’' or pre == '「' or pre == '」' ) then
+					note.durTick = 144
+					tik = tik + 0.2
+				end
+				note.noteNum = pitch
+				note.velocity = 64
+				note.lyric = cur
+				note.phonemes = ptab_j.tab[cur]
+				if(nex == 'ん' or nex == 'ン') then
+					note.phonemes = note.phonemes..' N'
+					note.durTick = 180
+					tik = tik + 0.5
+					k = k+3
+					nex = string.sub(lyrics, k+3, k+5)
+				elseif(nex == 'っ' or nex == 'ッ' or nex == 'ぁ' or nex == 'ァ' or nex == 'ぃ' or nex == 'ィ' or nex == 'ぅ' or nex == 'ゥ' or nex == 'ぇ' or nex == 'ェ' or nex == 'ぉ' or nex == 'ォ') then
+					k = k+3
+					nex = string.sub(lyrics, k+3, k+5)
+				else
+				end
+				VSInsertNote(note)
+				tik = tik + 1
+			end
+			if(nex == '’' or nex == '「' or nex == '」' or nex == '・' or nex == '。' or nex == '、' or nex == '？' or nex == '！') then
+				word = 0
+				pitch = 0
+			end
+			------------ preposition ----------------------------
+			if(pre == '・') then
+				pp = 1
+			end
+			if(pp == 1) then
+				note = {}
+				note.posTick = tik*120
+				note.durTick = 120
+				if(nex == '。' or nex == '、' or nex == '？' or nex == '！') then
+					note.durTick = 180
+					tik = tik + 0.5
+				end
+				note.noteNum = 63
+				if(cur == 'す' or cur == 'た' or cur == 'よ') then
+					note.noteNum = 59
+				elseif(cur == 'か') then
+					note.noteNum = 66
+				else
+				end
+				note.velocity = 64
+				note.lyric = cur
+				if(cur == 'は') then
+					cur = 'わ'
+				end
+				note.phonemes = ptab_j.tab[cur]
+				VSInsertNote(note)
+				tik = tik + 1
+			end
+			if(nex == '’' or nex == '「' or nex == '」' or nex == '・' or nex == '。' or nex == '、' or nex == '？' or nex == '！') then
+				pp = 0
+			end
+		elseif(cur == '。' or cur == '、' or cur == '？' or cur == '！') then 
+			tik = tik + 1
+		else
+		end
+		k = k+3
+	end
+
+	lyrics = string.gsub(lyrics, '’', '')
+	lyrics = string.gsub(lyrics, '「', '')
+	lyrics = string.gsub(lyrics, '」', '')
+	lyrics = string.gsub(lyrics, '・', '')
+	-- VSMessageBox(lyrics, 0)
 end

@@ -1,10 +1,10 @@
 function manifest()
     myManifest = {
-        name          = "Vocaloid TTS",
+        name          = "Vocaloid TTS for Live",
         comment       = "Text to Speech with Vocaloid",
         author        = "spaghetti code",
-        pluginID      = "{4F2E5CF3-CAB2-46AE-862F-7C672CC50609}",
-        pluginVersion = "1.0.0.2",
+        pluginID      = "{25C25D4B-1087-4F00-BAF1-A242B6487DEF}",
+        pluginVersion = "1.0.0.1",
         apiVersion    = "3.0.0.1"
     }
 
@@ -16,7 +16,7 @@ function main(processParam, envParam)
 	require('ptab_j')
 
 	-- パラメータ入力ダイアログのウィンドウタイトルを設定する.
-	VSDlgSetDialogTitle("Vocaloid TTS")
+	VSDlgSetDialogTitle("Vocaloid TTS for Live")
 
 	-- ダイアログにフィールドを追加する.
 	local field = {}
@@ -40,23 +40,17 @@ function main(processParam, envParam)
 	-- ダイアログから入力値を取得する.
 	dlgStatus, lyrics = VSDlgGetStringValue("lyrics")
 
-	notebackup = {}
-	notebackup.posTick = 0
-	notebackup.durTick = 0
-
 	VSSeekToBeginNote()
 	result, note = VSGetNextNote()
 	while result == 1 do
+		VSRemoveNote(note)
 		result, note = VSGetNextNote()
-		if(result == 1) then
-			notebackup = note
-		end
 	end
 
 	pitch = 0
 	word = 0
 	pp = 0
-	posTick = notebackup.posTick + notebackup.durTick + 300
+	posTick = 100
 	k = 4
 	cur = string.sub(lyrics, k, k+2)
 	while cur ~= '' do

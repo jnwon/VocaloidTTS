@@ -159,7 +159,4 @@ function main(processParam, envParam)
 	lyrics = string.gsub(lyrics, '「', '')
 	lyrics = string.gsub(lyrics, '」', '')
 	lyrics = string.gsub(lyrics, '・', '')
-	-- VSMessageBox(lyrics, 0)
-	outFile, errMsg = io.open(envParam.scriptDir..'\\current_input.txt', "w")
-	if (outFile) then outFile:write(lyrics) end
 end

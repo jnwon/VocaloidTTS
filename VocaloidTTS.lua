@@ -159,4 +159,5 @@ function main(processParam, envParam)
 	lyrics = string.gsub(lyrics, '「', '')
 	lyrics = string.gsub(lyrics, '」', '')
 	lyrics = string.gsub(lyrics, '・', '')
+	
 end

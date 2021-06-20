@@ -90,7 +90,13 @@ function main(processParam, envParam)
 					nex = string.sub(lyrics, k+3, k+5)
 				elseif(nex == 'っ' or nex == 'ッ' or nex == 'ぁ' or nex == 'ァ' or nex == 'ぃ' or nex == 'ィ' or nex == 'ぅ' or nex == 'ゥ' or nex == 'ぇ' or nex == 'ェ' or nex == 'ぉ' or nex == 'ォ') then
 					k = k+3
-					cur = nex
+					if(nex == 'ぁ' or nex == 'ァ' or nex == 'ぃ' or nex == 'ィ' or nex == 'ぇ' or nex == 'ェ' or nex == 'ぉ' or nex == 'ォ') then
+						cur = cur..nex
+						note.lyric = cur
+						note.phonemes = ptab_j.tab[cur]
+					else
+						cur = nex
+					end
 					nex = string.sub(lyrics, k+3, k+5)
 				else
 				end

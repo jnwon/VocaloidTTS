@@ -89,11 +89,11 @@ function main(processParam, envParam)
 				note.lyric = cur
 				note.phonemes = ptab_j.tab[cur]
 				if(nex == 'ん' or nex == 'ン') then
-					-- note.phonemes = note.phonemes..' N'
-					-- note.durTick = 180
-					-- k = k+3
-					-- cur = 'ン'
-					-- nex = string.sub(lyrics, k+3, k+5)
+					note.phonemes = note.phonemes..' N'
+					note.durTick = 180
+					k = k+3
+					cur = 'ン'
+					nex = string.sub(lyrics, k+3, k+5)
 				elseif(nex == 'っ' or nex == 'ッ' or nex == 'ぁ' or nex == 'ァ' or nex == 'ぃ' or nex == 'ィ' or nex == 'ぅ' or nex == 'ゥ' or nex == 'ぇ' or nex == 'ェ' or nex == 'ぉ' or nex == 'ォ') then
 					k = k+3
 					if(nex == 'ぁ' or nex == 'ァ' or nex == 'ぃ' or nex == 'ィ' or nex == 'ぇ' or nex == 'ェ' or nex == 'ぉ' or nex == 'ォ') then

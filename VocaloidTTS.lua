@@ -120,11 +120,16 @@ function main(processParam, envParam)
 				end
 				word = 0
 			end
-			------------ preposition ----------------------------
+			------------ postposition ----------------------------
 			if(pre == '・') then
 				pp = 1
 			end
 			if(pp == 1) then
+				if(nex == 'ゃ' or nex == 'ャ' or nex == 'ゅ' or nex == 'ュ' or nex == 'ょ' or nex == 'ョ') then
+					cur = cur..nex
+					k = k+3
+					nex = string.sub(lyrics, k+3, k+5)
+				end
 				note = {}
 				note.posTick = posTick
 				note.durTick = 100

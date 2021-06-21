@@ -149,6 +149,31 @@ function main(processParam, envParam)
 					cur = 'わ'
 				end
 				note.phonemes = ptab_j.tab[cur]
+				if(nex == 'ん' or nex == 'ン') then
+					note.phonemes = note.phonemes..' N'
+					note.durTick = 180
+					k = k+3
+					cur = 'ン'
+					nex = string.sub(lyrics, k+3, k+5)
+				elseif(nex == 'っ' or nex == 'ッ' or nex == 'ぁ' or nex == 'ァ' or nex == 'ぃ' or nex == 'ィ' or nex == 'ぅ' or nex == 'ゥ' or nex == 'ぇ' or nex == 'ェ' or nex == 'ぉ' or nex == 'ォ') then
+					k = k+3
+					if(nex == 'ぁ' or nex == 'ァ' or nex == 'ぃ' or nex == 'ィ' or nex == 'ぇ' or nex == 'ェ' or nex == 'ぉ' or nex == 'ォ') then
+						cur = cur..nex
+						note.lyric = cur
+						note.phonemes = ptab_j.tab[cur]
+					else
+						cur = nex
+					end
+					nex = string.sub(lyrics, k+3, k+5)
+				else
+				end
+				if(nex == 'ー') then
+					if(cur ~= 'ン') then
+						note.durTick = 180
+					end
+					k = k+3
+					nex = string.sub(lyrics, k+3, k+5)
+				end
 			end
 			if(nex == '’' or nex == '「' or nex == '」' or nex == '・' or nex == '。' or nex == '、' or nex == '？' or nex == '！') then
 				if(nex == '・' or nex == '。' or nex == '、' or nex == '？' or nex == '！') then

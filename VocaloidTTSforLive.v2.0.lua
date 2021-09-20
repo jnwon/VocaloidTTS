@@ -83,7 +83,7 @@ function main(processParam, envParam)
 		end
 		if string.find(line,'[Text analysis result]') ~= nil then
 
-		else
+		else 
 			tokeninfo = {}	
 			analysis = SplitString(line, ',')
 			tokeninfo.word = analysis[1]

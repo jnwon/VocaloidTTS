@@ -77,7 +77,8 @@ function main(processParam, envParam)
 	-- ダイアログから入力値を取得する.
 	dlgStatus, input = VSDlgGetStringValue("input")
 
-	os.execute("CMD /C \"echo "..input.." > input.txt\"")
+	-- os.execute("CMD /C \"echo "..input.." > input.txt\"")
+	os.execute("powershell \"Write-Output "..input.." | Set-Content input.txt\"")
 	os.execute("open_jtalk.exe -m mei/mei_normal.htsvoice -x dic -ow output.wav -ot analyzed.txt input.txt")
 	os.execute("powershell \"Get-Content analyzed.txt | Set-Content analyzed.utf8.txt -Encoding UTF8\"")
 	

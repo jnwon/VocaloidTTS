@@ -1,8 +1,31 @@
 from pywinauto import Application
 from datetime import datetime
-from os import path
-import psutil
+import os
+import sys
+import json
 import time
+import psutil
+import urllib.request
+
+client_id = "Y1BWzTsBYa4X0QByHdeb"
+client_secret = "OZRDDw0IQ4"
+
+def callPapago(client_id, client_secret, encText):
+    data = "source=ja&target=ko&text=" + encText
+    url = "https://openapi.naver.com/v1/papago/n2mt"
+    request = urllib.request.Request(url)
+    request.add_header("X-Naver-Client-Id",client_id)
+    request.add_header("X-Naver-Client-Secret",client_secret)
+    response = urllib.request.urlopen(request, data=data.encode("utf-8"))
+    rescode = response.getcode()
+    if(rescode==200):
+        response_body = response.read()
+        response_obj = json.loads(response_body.decode('utf-8'))
+        f = open('output.papago.txt', 'w', encoding="UTF-8")
+        f.write(response_obj["message"]["result"]["translatedText"])
+        f.close()
+    else:
+        print("Papago Error:" + rescode)
 
 def runTTS(window, key, isFirstPlay):
     print('Generating Vocaloid Notes..')
@@ -11,10 +34,12 @@ def runTTS(window, key, isFirstPlay):
     flag = False
     while 1:
         time.sleep(0.1)
-        if path.isfile('input.txt'):
+        if os.path.isfile('input.txt'):
             f = open('input.txt', "r")
             inputData = f.readlines()
             f.close()
+            encText = urllib.parse.quote(inputData[0])
+            callPapago(client_id, client_secret, encText)
         else:
             inputData = [1,2]
         if len(inputData) == 1:
@@ -33,13 +58,12 @@ def runTTS(window, key, isFirstPlay):
 
 now = datetime.now()
 date = now.strftime('%Y%m%d')
-logDir = path.expandvars(r'%LOCALAPPDATA%\Yukarinette\Logs')
+logDir = os.path.expandvars(r'%LOCALAPPDATA%\Yukarinette\Logs')
 logFile = logDir + '\\log.'+date+'.log'
 errorMsg_1 = 'Error: Vocaloid Editor is not running.'
 errorMsg_2 = 'Error: Yukarinette log file('+logFile+') doesn\'t exists.'
 isAppRunning = False
 ttsTriggerKey = 'f'
-
 
 for proc in psutil.process_iter():
     try:
@@ -80,7 +104,7 @@ except:
     quit()
 
 
-if path.isfile('setting.txt'):
+if os.path.isfile('setting.txt'):
     f = open('setting.txt', 'r')
     settingData = f.readlines()
     f.close()

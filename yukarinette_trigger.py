@@ -8,9 +8,20 @@ import psutil
 
 def restartServer(window):
     print('Restarting server..')
-    window['Button5'].click()
-    time.sleep(0.5)
-    window['Button4'].click()
+    while 1:
+        time.sleep(0.5)
+        try:
+            window['Button5'].click()
+            break
+        except:
+            pass
+    while 1:
+        time.sleep(0.5)
+        try:
+            window['Button4'].click()
+            break
+        except:
+            pass
     while 1:
         time.sleep(0.5)
         procs = pywinauto.findwindows.find_elements()

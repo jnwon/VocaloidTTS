@@ -22,6 +22,7 @@ def restartServer(window):
             break
         except:
             pass
+    timer = 300
     while 1:
         time.sleep(0.5)
         procs = pywinauto.findwindows.find_elements()
@@ -41,6 +42,23 @@ def restartServer(window):
             print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Server restarted.')
             break
 
+        timer = timer - 0.5
+        if timer == 0:
+            timer = 300
+            while 1:
+                time.sleep(0.5)
+                try:
+                    window['Button5'].click()
+                    break
+                except:
+                    pass
+            while 1:
+                time.sleep(0.5)
+                try:
+                    window['Button4'].click()
+                    break
+                except:
+                    pass
 
 logDir = os.path.expandvars(r'%LOCALAPPDATA%\Yukarinette\Logs')
 isAppRunning = False

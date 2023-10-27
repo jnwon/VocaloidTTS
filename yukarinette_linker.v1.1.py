@@ -7,15 +7,15 @@ import time
 import psutil
 import urllib.request
 
-client_id = "Y1BWzTsBYa4X0QByHdeb"
-client_secret = "OZRDDw0IQ4"
+client_id = "ztdadkpxbm"
+client_secret = "U8YbVSbyAkZ2ihfkEBTiPlmC88Igl7KNawIRe0U6"
 
 def callPapago(client_id, client_secret, encText):
     data = "source=ja&target=ko&text=" + encText
-    url = "https://openapi.naver.com/v1/papago/n2mt"
+    url = "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation"
     request = urllib.request.Request(url)
-    request.add_header("X-Naver-Client-Id",client_id)
-    request.add_header("X-Naver-Client-Secret",client_secret)
+    request.add_header("X-NCP-APIGW-API-KEY-ID",client_id)
+    request.add_header("X-NCP-APIGW-API-KEY",client_secret)
     response = urllib.request.urlopen(request, data=data.encode("utf-8"))
     rescode = response.getcode()
     if(rescode==200):

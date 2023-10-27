@@ -45,6 +45,16 @@ def restartServer(window):
         timer = timer - 0.5
         if timer == 0:
             timer = 300
+            for prc in psutil.process_iter():
+                try:
+                    processName = prc.name()
+                    processID = prc.pid
+                    if processName == 'chrome.exe':
+                        psutil.Process(processID).kill()
+                        break
+
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    pass
             while 1:
                 time.sleep(0.5)
                 try:

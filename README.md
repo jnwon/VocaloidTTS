@@ -5,4 +5,4 @@ Text to Speech with Vocaloid
 
 -Usage demo(v2.0) : https://www.nicovideo.jp/watch/sm39375190 / https://youtu.be/6f7pr1Rp48E
 
--Package download : [http://54.180.97.42/projects/vocaloid-tts/files](https://github.com/jnwon/VocaloidTTS/releases/tag/vocaloidtts)https://github.com/jnwon/VocaloidTTS/releases/tag/vocaloidtts
+-Package download : https://github.com/jnwon/VocaloidTTS/releases/tag/vocaloidtts

@@ -7,7 +7,11 @@ import time
 import psutil
 
 def restartServer(window):
-    print('Restarting server..')
+    print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Restarting server..')
+    f = open('yukarinette_trigger.log', "a")
+    log = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Restarting server..\n'
+    f.write(log)
+    f.close()
     while 1:
         time.sleep(0.5)
         try:
@@ -46,15 +50,11 @@ def restartServer(window):
         if timer == 0:
             timer = 300
             for prc in psutil.process_iter():
-                try:
-                    processName = prc.name()
-                    processID = prc.pid
-                    if processName == 'chrome.exe':
-                        psutil.Process(processID).kill()
-                        break
-
-                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                    pass
+                processName = prc.name()
+                processID = prc.pid
+                if processName == 'chrome.exe':
+                    psutil.Process(processID).kill()
+                    break
             while 1:
                 time.sleep(0.5)
                 try:

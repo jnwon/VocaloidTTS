@@ -27,6 +27,7 @@ def restartServer(window):
         except:
             pass
     timer = 300
+    # timer = 10
     while 1:
         time.sleep(0.5)
         procs = pywinauto.findwindows.find_elements()
@@ -49,12 +50,23 @@ def restartServer(window):
         timer = timer - 0.5
         if timer == 0:
             timer = 300
+            # timer = 10
+            f = open('yukarinette_trigger.log', "a")
             for prc in psutil.process_iter():
                 processName = prc.name()
                 processID = prc.pid
                 if processName == 'chrome.exe':
+                    log = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + 'Kill chrome.exe(%d)..' %processID
+                    print(log)
+                    f.write(log)
                     psutil.Process(processID).kill()
-                    break
+                    log = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + 'chrome.exe(%d) killed.' %processID
+                    print(log)
+                    f.write(log)
+            log = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + 'All chrome.exe process were terminated.'
+            print(log)
+            f.write(log)
+            f.close()
             while 1:
                 time.sleep(0.5)
                 try:
@@ -102,6 +114,7 @@ while 1:
         lines = f.readlines()
         f.close()
         if lines[len(lines) - 1].find('web server task end.') > 0 :
+        # if lines[len(lines) - 1].find('speech received task end.') > 0 or lines[len(lines) - 1].find('web server task end.') > 0:
             restartServer(window)
         elif lines[len(lines) - 1].find('Progmram Exit.') > 0 :
             print('Yukarinette was closed.')

@@ -16,6 +16,7 @@ def restartServer(window):
         time.sleep(0.5)
         try:
             window['Button5'].click()
+            print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Cancel button clicked.')
             break
         except:
             pass
@@ -23,6 +24,7 @@ def restartServer(window):
         time.sleep(0.5)
         try:
             window['Button4'].click()
+            print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Record button clicked.')
             break
         except:
             pass
@@ -71,6 +73,7 @@ def restartServer(window):
                 time.sleep(0.5)
                 try:
                     window['Button5'].click()
+                    print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Cancel button clicked.')
                     break
                 except:
                     pass
@@ -78,6 +81,7 @@ def restartServer(window):
                 time.sleep(0.5)
                 try:
                     window['Button4'].click()
+                    print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Record button clicked.')
                     break
                 except:
                     pass

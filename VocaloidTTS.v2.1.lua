@@ -4,7 +4,7 @@ function manifest()
         comment       = "Text to Speech with Vocaloid",
         author        = "spaghetti code",
         pluginID      = "{4F2E5CF3-CAB2-46AE-862F-7C672CC50609}",
-        pluginVersion = "2.0.0.1",
+        pluginVersion = "2.1.0.1",
         apiVersion    = "3.0.0.1"
     }
 
@@ -76,6 +76,7 @@ function main(processParam, envParam)
 
 	-- ダイアログから入力値を取得する.
 	dlgStatus, input = VSDlgGetStringValue("input")
+	input = string.gsub(input, ' ', '')
 
 	-- os.execute("CMD /C \"echo "..input.." > input.txt\"")
 	os.execute("powershell \"Write-Output "..input.." | Set-Content input.txt\"")

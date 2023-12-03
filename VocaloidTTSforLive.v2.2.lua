@@ -4,7 +4,7 @@ function manifest()
         comment       = "Text to Speech with Vocaloid",
         author        = "spaghetti code",
         pluginID      = "{25C25D4B-1087-4F00-BAF1-A242B6487DEF}",
-        pluginVersion = "2.0.0.1",
+        pluginVersion = "2.2.0.1",
         apiVersion    = "3.0.0.1"
     }
 
@@ -45,7 +45,7 @@ function main(processParam, envParam)
 	end
 	--VSUpdateControlAt("BRI", 100, 64);
 	--VSUpdateControlAt("DYN", 100, 64);
-	
+
 	-- パラメータ入力ダイアログのウィンドウタイトルを設定する.
 	VSDlgSetDialogTitle("Vocaloid TTS for Live")
 
@@ -70,19 +70,22 @@ function main(processParam, envParam)
 
 	-- ダイアログから入力値を取得する.
 	dlgStatus, input = VSDlgGetStringValue("input")
+	input = string.gsub(input, ' ', '')
 
 	-- os.execute("CMD /C \"echo "..input.." > input.txt\"")
-	os.execute("powershell \"Write-Output "..input.." | Set-Content input_tmp.txt\"")
+	os.execute("powershell \"Write-Output "..input.." | Set-Content input.txt\"")
 	os.execute("open_jtalk.exe -m mei/mei_normal.htsvoice -x dic -ow output.wav -ot analyzed.txt input.txt")
 	os.execute("powershell \"Get-Content analyzed.txt | Set-Content analyzed.utf8.txt -Encoding UTF8\"")
 	
 	token = {}
 	i = 1
 	for line in io.lines("analyzed.utf8.txt") do
-		if (line == '') or (string.find(line,'　') ~= nil) then
+		if (line == '') then
 			break
 		end
 		if string.find(line,'[Text analysis result]') ~= nil then
+
+		elseif string.find(line,'　') ~= nil then
 
 		else
 			tokeninfo = {}	

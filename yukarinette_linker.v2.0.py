@@ -218,6 +218,7 @@ while 1:
         lines = f.readlines()
         updateTimeNew = lines[len(lines)-1].split(" ")[0]
         if updateTime != updateTimeNew:
+            winsound.PlaySound("wav\\standby.wav", winsound.SND_FILENAME)
             updateTime = updateTimeNew
             text = lines[len(lines)-1][lines[len(lines)-1].index(" ")+1:]
             callPapago(client_id, client_secret, text, window_v, ttsTriggerKey)

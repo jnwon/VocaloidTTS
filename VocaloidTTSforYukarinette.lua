@@ -48,14 +48,15 @@ function main(processParam, envParam)
 	--VSMessageBox(date, 0)
 	
 	date = os.date("%Y%m%d")
-	cmd = '$readfile = Get-Content $env:LOCALAPPDATA\\Yukarinette\\Logs\\log.'..date..'.log -Tail 2; $tokens = $readfile -split \'message=\'; Set-Content input.txt $tokens[1]; Get-Content input.txt | Set-Content input.utf8.txt -Encoding UTF8'
+	-- cmd = '$readfile = Get-Content $env:LOCALAPPDATA\\Yukarinette\\Logs\\log.'..date..'.log -Tail 2; $tokens = $readfile -split \'message=\'; Set-Content input.txt $tokens[1]; Get-Content input.txt | Set-Content input.utf8.txt -Encoding UTF8'
+	cmd = '$readfile = Get-Content $env:LOCALAPPDATA\\Yukarinette\\Logs\\log.'..date..'.log -Tail 2; $tokens = $readfile -split \'message=\'; Set-Content input.txt $tokens[1] -Encoding UTF8'
 	os.execute('powershell '..cmd)
 	os.execute("open_jtalk.exe -m mei/mei_normal.htsvoice -x dic -ow output.wav -ot analyzed.txt input.txt")
-	os.execute('powershell "Get-Content analyzed.txt | Set-Content analyzed.utf8.txt -Encoding UTF8"')
+	-- os.execute('powershell "Get-Content analyzed.txt | Set-Content analyzed.utf8.txt -Encoding UTF8"')
 	
 	token = {}
 	i = 1
-	for line in io.lines("analyzed.utf8.txt") do
+	for line in io.lines("analyzed.txt") do
 		if (line == '') then
 			break
 		end

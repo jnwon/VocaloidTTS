@@ -1,10 +1,58 @@
 from pywinauto import Application
 from datetime import datetime
-import pywinauto
 import os
 import sys
 import time
+import json
 import psutil
+import urllib.request
+
+client_id = "ztdadkpxbm"
+client_secret = "U8YbVSbyAkZ2ihfkEBTiPlmC88Igl7KNawIRe0U6"
+
+def callPapago(client_id, client_secret, encText, window, ttsTriggerKey):
+    data = "source=ko&target=ja&text=" + encText
+    url = "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation"
+    request = urllib.request.Request(url)
+    request.add_header("X-NCP-APIGW-API-KEY-ID",client_id)
+    request.add_header("X-NCP-APIGW-API-KEY",client_secret)
+    response = urllib.request.urlopen(request, data=data.encode("utf-8"))
+    rescode = response.getcode()
+    if(rescode==200):
+        response_body = response.read()
+        response_obj = json.loads(response_body.decode('utf-8'))
+        f = open('tts_script_jp.txt', 'a', encoding="UTF-8")
+        f.write(datetime.now().isoformat() + ' ' + response_obj["message"]["result"]["translatedText"] + '\n')
+        f.close()
+        runTTS(window, ttsTriggerKey, False)
+    else:
+        print("Papago Error:" + rescode)
+
+def runTTS(window, key, isFirstPlay):
+    print('Generating Vocaloid Notes..')
+    window.send_keystrokes('^'+key)
+    #jopPluginWindow = app['Running Job Plugin']
+    flag = False
+    while 1:
+        time.sleep(0.1)
+        if os.path.isfile('input.txt'):
+            f = open('input.txt', "r", encoding='UTF-8')
+            inputData = f.readlines()
+            f.close()
+        else:
+            inputData = [1,2]
+        if len(inputData) == 1:
+            if not flag:
+                flag = True
+        if flag and len(inputData) == 2:
+            playtime = int(inputData[1])*0.0015
+            if isFirstPlay:
+                playtime = playtime +2
+            break
+    window['tool_play'].click()
+    time.sleep(playtime)
+    window['tool_stop'].click()
+    window['tool_gototop'].click()
 
 def restartServer(window):
     print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Restarting server..')
@@ -87,29 +135,64 @@ def restartServer(window):
                     pass
 
 logDir = os.path.expandvars(r'%LOCALAPPDATA%\Yukarinette\Logs')
-isAppRunning = False
+isApp1Running = False
+isApp2Running = False
+ttsTriggerKey = 'f'
 
 for proc in psutil.process_iter():
     try:
         processName = proc.name()
         processID = proc.pid
         if processName == 'Yukarinette.exe' :
-            app = Application(backend="uia").connect(process=processID)
-            isAppRunning = True
-            break
+            app1 = Application(backend="uia").connect(process=processID)
+            isApp1Running = True
+        elif processName == 'VOCALOID4.exe' or processName == 'VOCALOID3.exe' :
+            app2 = Application(backend="win32").connect(process=processID)
+            isApp2Running = True
  
     except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
         pass
 
-if not isAppRunning:
+if not isApp1Running:
     print('Yukarinette is not running.')
     sys.exit()
 
+if not isApp2Running:
+    print('Vocaloid Editor is not running.')
+    sys.exit()
 
-window = app.window()
+
+window_y = app1.window()
+window_v = app2.window()
+
+
+try:
+    f = open("tts_script.txt", "r")
+    lines = f.readlines()
+    updateTime = lines[len(lines)-1].split(" ")[0]
+    f.close()
+except:
+    print('tts_script.txt doesn\'t exists.')
+    updateTime = '1989-02-17T00:00:00'
+
+
+if os.path.isfile('setting_tts.txt'):
+    f = open('setting_tts.txt', 'r')
+    settingData = f.readlines()
+    f.close()
+    ttsTriggerKey = settingData[0].split("=")[1]
+else:
+    print('Enter the short-cut key that you set into Vocaloid Editor to run Vocaloid TTS plug-in.')
+    ttsTriggerKey = input('Ctrl + ')
+    f = open('setting_tts.txt', 'w')
+    f.write('shortcutKey='+ttsTriggerKey)
+    f.close()
+
+
+print('Vocaloid TTS was linked with Yukarinette successfully.')
 
 while 1:
-    time.sleep(1)
+    time.sleep(0.1)
     now = datetime.now()
     date = now.strftime('%Y%m%d')
     logFile = logDir + '\\log.' + date + '.log'
@@ -118,10 +201,24 @@ while 1:
         lines = f.readlines()
         f.close()
         if lines[len(lines) - 1].find('web server task end.') > 0 :
-        # if lines[len(lines) - 1].find('speech received task end.') > 0 or lines[len(lines) - 1].find('web server task end.') > 0:
-            restartServer(window)
+            restartServer(window_y)
         elif lines[len(lines) - 1].find('Progmram Exit.') > 0 :
             print('Yukarinette was closed.')
+            break
+
+        f = open("tts_script.txt", "r")
+        lines = f.readlines()
+        updateTimeNew = lines[len(lines)-1].split(" ")[0]
+        if updateTime != updateTimeNew:
+            updateTime = updateTimeNew
+            text = lines[len(lines)-1][lines[len(lines)-1].index(" ")+1:]
+            callPapago(client_id, client_secret, text, window_v, ttsTriggerKey)
+        f.close()
+        
+        try:
+            window_v.is_active()
+        except:
+            print('Vocaloid Editor was closed.')
             break
     except:
         pass

@@ -5,6 +5,7 @@ import sys
 import time
 import json
 import psutil
+import winsound
 import urllib.request
 
 client_id = "ztdadkpxbm"
@@ -29,12 +30,14 @@ def callPapago(client_id, client_secret, encText, window, ttsTriggerKey):
         print("Papago Error:" + rescode)
 
 def runTTS(window, key, isFirstPlay):
-    print('Generating Vocaloid Notes..')
+    print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Running Vocaloid TTS..')
     window.send_keystrokes('^'+key)
     #jopPluginWindow = app['Running Job Plugin']
     flag = False
+    timer = 0
     while 1:
         time.sleep(0.1)
+        timer = timer + 1
         if os.path.isfile('input.txt'):
             f = open('input.txt', "r", encoding='UTF-8')
             inputData = f.readlines()
@@ -49,10 +52,15 @@ def runTTS(window, key, isFirstPlay):
             if isFirstPlay:
                 playtime = playtime +2
             break
-    window['tool_play'].click()
-    time.sleep(playtime)
-    window['tool_stop'].click()
-    window['tool_gototop'].click()
+        if timer >= 600:
+            print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Vocaloid TTS doesn\'t respond.')
+            winsound.PlaySound("wav\\error.wav", winsound.SND_FILENAME)
+            break
+    if timer < 600:
+        window['tool_play'].click()
+        time.sleep(playtime)
+        window['tool_stop'].click()
+        window['tool_gototop'].click()
 
 def restartServer(window):
     print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Restarting server..')

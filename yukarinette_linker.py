@@ -12,7 +12,7 @@ def runTTS(window, key, isFirstPlay):
     while 1:
         time.sleep(0.1)
         if path.isfile('input.txt'):
-            f = open('input.txt', "r")
+            f = open('input.txt', "r", encoding='UTF-8')
             inputData = f.readlines()
             f.close()
         else:

@@ -81,11 +81,11 @@ function main(processParam, envParam)
 	-- os.execute("CMD /C \"echo "..input.." > input.txt\"")
 	os.execute("powershell \"Write-Output "..input.." | Set-Content input.txt -Encoding UTF8\"")
 	os.execute("open_jtalk.exe -m mei/mei_normal.htsvoice -x dic -ow output.wav -ot analyzed.txt input.txt")
-	os.execute("powershell \"Get-Content analyzed.txt | Set-Content analyzed.utf8.txt -Encoding UTF8\"")
+	-- os.execute("powershell \"Get-Content analyzed.txt | Set-Content analyzed.utf8.txt -Encoding UTF8\"")
 	
 	token = {}
 	i = 1
-	for line in io.lines("analyzed.utf8.txt") do
+	for line in io.lines("analyzed.txt") do
 		if (line == '') or (string.find(line,'　') ~= nil) then
 			break
 		end

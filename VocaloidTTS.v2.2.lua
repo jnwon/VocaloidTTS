@@ -4,7 +4,7 @@ function manifest()
         comment       = "Text to Speech with Vocaloid",
         author        = "spaghetti code",
         pluginID      = "{4F2E5CF3-CAB2-46AE-862F-7C672CC50609}",
-        pluginVersion = "2.1.0.1",
+        pluginVersion = "2.2.0.1",
         apiVersion    = "3.0.0.1"
     }
 
@@ -53,7 +53,7 @@ function main(processParam, envParam)
 	--VSUpdateControlAt("DYN", 100, 64);
 	
 	-- パラメータ入力ダイアログのウィンドウタイトルを設定する.
-	VSDlgSetDialogTitle("Vocaloid TTS for Live")
+	VSDlgSetDialogTitle("Vocaloid TTS")
 
 	-- ダイアログにフィールドを追加する.
 	local field = {}

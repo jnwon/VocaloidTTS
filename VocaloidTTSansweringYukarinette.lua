@@ -47,8 +47,14 @@ function main(processParam, envParam)
 	--VSUpdateControlAt("DYN", 100, 64);
 	--VSMessageBox(date, 0)
 	
-	cmd = '$readfile = Get-Content tts_script_jp.txt -Tail 1 -Encoding UTF8; $tokens = $readfile -split \' \'; Set-Content input.txt $tokens[1] -Encoding UTF8'
+	cmd = '$readfile = Get-Content tts_script_rendered.txt -Tail 1 -Encoding UTF8; $tokens = $readfile -split \' \'; Set-Content script_mode.txt $tokens[1] -Encoding UTF8; Set-Content input.txt $tokens[2] -Encoding UTF8'
 	os.execute('powershell '..cmd)
+	
+	for line in io.lines("script_mode.txt") do
+		if (line == '2') then
+			-- korean to kana processing!(reset input.txt with kana string)
+		end
+	end
 	os.execute("open_jtalk.exe -m mei/mei_normal.htsvoice -x dic -ow output.wav -ot analyzed.txt input.txt")
 	
 	token = {}

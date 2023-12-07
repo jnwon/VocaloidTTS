@@ -36,6 +36,7 @@ end
 function main(processParam, envParam)
 
 	require('ptab_j')
+	require('k2jmap')
 
 	VSSeekToBeginNote()
 	result, note = VSGetNextNote()
@@ -52,7 +53,26 @@ function main(processParam, envParam)
 	
 	for line in io.lines("script_mode.txt") do
 		if (line == '2') then
-			-- korean to kana processing!(reset input.txt with kana string)
+			for input in io.lines("input.txt") do
+				input = string.gsub(input, '%.', '。')
+				input = string.gsub(input, ',', '、')
+				input = string.gsub(input, '?', '？')
+				input = string.gsub(input, '!', '！')
+
+				replaced = ''
+				for i = 1, string.len(input), 3 do
+					char = string.sub(input, i, i+2)
+					if ((string.byte(char) >= string.byte('가')) and (string.byte(char) <= string.byte('힝'))) then
+						replaced = replaced..k2jmap.map[char]
+					elseif char == '。' or char == '、' or char == '？' or char == '！' then
+						replaced = replaced..char
+					end
+				end
+				if (string.len(replaced) > 0) then
+					input = replaced
+				end
+			end
+			os.execute("powershell \"Write-Output "..input.." | Set-Content input.txt -Encoding UTF8\"")
 		end
 	end
 	os.execute("open_jtalk.exe -m mei/mei_normal.htsvoice -x dic -ow output.wav -ot analyzed.txt input.txt")

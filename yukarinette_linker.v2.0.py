@@ -199,6 +199,7 @@ else:
 
 print('Vocaloid TTS was linked with Yukarinette successfully.')
 
+reloading = False
 while 1:
     time.sleep(0.1)
     now = datetime.now()
@@ -226,15 +227,20 @@ while 1:
                 callPapago(client_id, client_secret, val, window_v, ttsTriggerKey)
             elif val[0] == '2':
                 f = open('tts_script_rendered.txt', 'a', encoding="UTF-8")
-                f.write(datetime.now().isoformat() + ' 2 ' + text.replace(' ', '') + '\n')
+                f.write(datetime.now().isoformat() + ' 2 ' + text.replace(' ', '、') + '\n')
                 f.close()
                 runTTS(window_v, ttsTriggerKey, False)
         f.close()
         
         try:
             window_v.is_active()
+            if reloading:
+                print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Vocaloid Editor window object reloaded.')
+                reloading = False
         except:
-            print('Vocaloid Editor was closed.')
-            break
+            if not reloading:
+                print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Reloading Vocaloid Editor window object..')
+                reloading = True
+            window_v = app2.window()
     except:
         pass

@@ -12,7 +12,7 @@ client_id = "ztdadkpxbm"
 client_secret = "U8YbVSbyAkZ2ihfkEBTiPlmC88Igl7KNawIRe0U6"
 
 def callPapago(client_id, client_secret, encText, window, ttsTriggerKey):
-    data = "source=ko&target=ja&text=" + encText
+    data = "source=ko&target=ja&text=" + encText[encText.index(" ")+1:]
     url = "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation"
     request = urllib.request.Request(url)
     request.add_header("X-NCP-APIGW-API-KEY-ID",client_id)
@@ -22,8 +22,8 @@ def callPapago(client_id, client_secret, encText, window, ttsTriggerKey):
     if(rescode==200):
         response_body = response.read()
         response_obj = json.loads(response_body.decode('utf-8'))
-        f = open('tts_script_jp.txt', 'a', encoding="UTF-8")
-        f.write(datetime.now().isoformat() + ' ' + response_obj["message"]["result"]["translatedText"] + '\n')
+        f = open('tts_script_rendered.txt', 'a', encoding="UTF-8")
+        f.write(datetime.now().isoformat() + ' 1 ' + response_obj["message"]["result"]["translatedText"] + '\n')
         f.close()
         runTTS(window, ttsTriggerKey, False)
     else:
@@ -220,8 +220,15 @@ while 1:
         if updateTime != updateTimeNew:
             winsound.PlaySound("wav\\standby.wav", winsound.SND_FILENAME)
             updateTime = updateTimeNew
-            text = lines[len(lines)-1][lines[len(lines)-1].index(" ")+1:]
-            callPapago(client_id, client_secret, text, window_v, ttsTriggerKey)
+            val = lines[len(lines)-1][lines[len(lines)-1].index(" ")+1:]
+            text = lines[len(lines)-1][lines[len(lines)-1].index(" ")+3:]
+            if val[0] == '1':
+                callPapago(client_id, client_secret, val, window_v, ttsTriggerKey)
+            elif val[0] == '2':
+                f = open('tts_script_rendered.txt', 'a', encoding="UTF-8")
+                f.write(datetime.now().isoformat() + ' 2 ' + text.replace(' ', '') + '\n')
+                f.close()
+                runTTS(window_v, ttsTriggerKey, False)
         f.close()
         
         try:

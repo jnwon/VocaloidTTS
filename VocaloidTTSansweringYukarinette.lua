@@ -52,7 +52,8 @@ function main(processParam, envParam)
 	os.execute('powershell '..cmd)
 	
 	for line in io.lines("script_mode.txt") do
-		if (line == '2') then
+		if string.find(line,'2') ~= nil then
+			stupit = ''
 			for input in io.lines("input.txt") do
 				input = string.gsub(input, '%.', '。')
 				input = string.gsub(input, ',', '、')
@@ -69,10 +70,10 @@ function main(processParam, envParam)
 					end
 				end
 				if (string.len(replaced) > 0) then
-					input = replaced
+					stupit = replaced
 				end
 			end
-			os.execute("powershell \"Write-Output "..input.." | Set-Content input.txt -Encoding UTF8\"")
+			os.execute("powershell \"Write-Output "..stupit.." | Set-Content input.txt -Encoding UTF8\"")
 		end
 	end
 	os.execute("open_jtalk.exe -m mei/mei_normal.htsvoice -x dic -ow output.wav -ot analyzed.txt input.txt")

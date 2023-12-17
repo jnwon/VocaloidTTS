@@ -237,6 +237,15 @@ while 1:
             if reloading:
                 print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Vocaloid Editor window object reloaded.')
                 reloading = False
+                g = open('input.txt', "r", encoding='UTF-8')
+                inputData = g.readlines()
+                g.close()
+                if len(inputData) == 2:
+                    playtime = int(inputData[1])*0.0015
+                    window_v['tool_play'].click()
+                    time.sleep(playtime)
+                    window_v['tool_stop'].click()
+                    window_v['tool_gototop'].click()
         except:
             if not reloading:
                 print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Reloading Vocaloid Editor window object..')

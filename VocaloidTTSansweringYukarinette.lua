@@ -59,13 +59,23 @@ function main(processParam, envParam)
 				input = string.gsub(input, ',', '、')
 				input = string.gsub(input, '?', '？')
 				input = string.gsub(input, '!', '！')
+				input = string.gsub(input, '0', "よん")
+				input = string.gsub(input, '1', "いる")
+				input = string.gsub(input, '2', "い")
+				input = string.gsub(input, '3', "さむ")
+				input = string.gsub(input, '4', "さ")
+				input = string.gsub(input, '5', "お")
+				input = string.gsub(input, '6', "ゆく")
+				input = string.gsub(input, '7', "ちる")
+				input = string.gsub(input, '8', "ぱる")
+				input = string.gsub(input, '9', "ぐ")
 
 				replaced = ''
 				for i = 1, string.len(input), 3 do
 					char = string.sub(input, i, i+2)
 					if ((string.byte(char) >= string.byte('가')) and (string.byte(char) <= string.byte('힝'))) then
 						replaced = replaced..k2jmap.map[char]
-					elseif char == '。' or char == '、' or char == '？' or char == '！' then
+					elseif char == '。' or char == '、' or char == '？' or char == '！' or char == 'よ' or char == 'ん' or char == 'い' or char == 'る' or char == 'さ' or char == 'む' or char == 'お' or char == 'ゆ' or char == 'く' or char == 'ち' or char == 'ぱ' or char == 'ぐ' then
 						replaced = replaced..char
 					end
 				end

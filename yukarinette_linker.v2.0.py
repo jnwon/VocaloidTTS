@@ -237,6 +237,7 @@ while 1:
             if reloading:
                 print(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + ' Vocaloid Editor window object reloaded.')
                 reloading = False
+                time.sleep(0.1)
                 g = open('input.txt', "r", encoding='UTF-8')
                 inputData = g.readlines()
                 g.close()

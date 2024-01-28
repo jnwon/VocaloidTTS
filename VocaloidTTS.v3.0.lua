@@ -4,7 +4,7 @@ function manifest()
         comment       = "Text to Speech with Vocaloid",
         author        = "spaghetti code",
         pluginID      = "{4F2E5CF3-CAB2-46AE-862F-7C672CC50609}",
-        pluginVersion = "3.0.0.1",
+        pluginVersion = "3.0.0.2",
         apiVersion    = "3.0.0.1"
     }
 
@@ -78,36 +78,34 @@ function main(processParam, envParam)
 	-- ダイアログから入力値を取得する.
 	dlgStatus, input = VSDlgGetStringValue("input")
 	input = string.gsub(input, ' ', '')
-	input = string.gsub(input, '%.', '。')
-	input = string.gsub(input, ',', '、')
-	input = string.gsub(input, '?', '？')
-	input = string.gsub(input, '!', '！')
-	input = string.gsub(input, '0', "よん")
-	input = string.gsub(input, '1', "いる")
-	input = string.gsub(input, '2', "い")
-	input = string.gsub(input, '3', "さむ")
-	input = string.gsub(input, '4', "さ")
-	input = string.gsub(input, '5', "お")
-	input = string.gsub(input, '6', "ゆく")
-	input = string.gsub(input, '7', "ちる")
-	input = string.gsub(input, '8', "ぱる")
-	input = string.gsub(input, '9', "ぐ")
 
-	isKorean = 0
-	replaced = ''
-	for i = 1, string.len(input), 3 do
-		char = string.sub(input, i, i+2)
-		if ((string.byte(char) >= string.byte('가')) and (string.byte(char) <= string.byte('힝'))) then
-			if i == 1 then
-				isKorean = 1
+	char = string.sub(input, 1, 3)
+	if ((string.byte(char) >= string.byte('가')) and (string.byte(char) <= string.byte('힝'))) then
+
+		input = string.gsub(input, '%.', '。')
+		input = string.gsub(input, ',', '、')
+		input = string.gsub(input, '?', '？')
+		input = string.gsub(input, '!', '！')
+		input = string.gsub(input, '0', "よん")
+		input = string.gsub(input, '1', "いる")
+		input = string.gsub(input, '2', "い")
+		input = string.gsub(input, '3', "さむ")
+		input = string.gsub(input, '4', "さ")
+		input = string.gsub(input, '5', "お")
+		input = string.gsub(input, '6', "ゆく")
+		input = string.gsub(input, '7', "ちる")
+		input = string.gsub(input, '8', "ぱる")
+		input = string.gsub(input, '9', "ぐ")
+		
+		replaced = ''
+		for i = 1, string.len(input), 3 do
+			char = string.sub(input, i, i+2)
+			if ((string.byte(char) >= string.byte('가')) and (string.byte(char) <= string.byte('힝'))) then
+				replaced = replaced..k2jmap.map[char]
+			elseif char == '。' or char == '、' or char == '？' or char == '！' or char == 'よ' or char == 'ん' or char == 'い' or char == 'る' or char == 'さ' or char == 'む' or char == 'お' or char == 'ゆ' or char == 'く' or char == 'ち' or char == 'ぱ' or char == 'ぐ' then
+				replaced = replaced..char
 			end
-			replaced = replaced..k2jmap.map[char]
-		elseif char == '。' or char == '、' or char == '？' or char == '！' or char == 'よ' or char == 'ん' or char == 'い' or char == 'る' or char == 'さ' or char == 'む' or char == 'お' or char == 'ゆ' or char == 'く' or char == 'ち' or char == 'ぱ' or char == 'ぐ' then
-			replaced = replaced..char
 		end
-	end
-	-- if (string.len(replaced) > 0) then
-	if isKorean == 1 then
 		input = replaced
 	end
 
